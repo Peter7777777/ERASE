@@ -11,6 +11,7 @@ import multiprocessing
 import json
 import copy
 import numpy as np
+import numpy.random
 import scipy as sp
 import xgboost as xgb
 import tensorflow as tf
@@ -301,16 +302,18 @@ def OptimizerWByFOA(X, y, test_size, random_state, tree_numbers=15, lifeTime=5, 
 
 def main(random_state, dataName, test_size, classifier, k):
     fsutil = DatasetUtil(random_state, dataName, test_size, classifier)
-    try:
-        if test_size < 1:
-            X, y = fsutil.GetLoadDataset(dataName, onehot=False)
-            bestW = OptimizerWByFOA(X, y, test_size, random_state, tree_numbers=15, lifeTime=5, loop=10, areaLimit=30, transferRate=0.05, K=k)
-            gc.collect()
-            X = XGBLFS.LapChange(X, bestW, K=k)
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-            print("start")
-            featureSelection = XGBLFS(X_train, X_test, y_train, y_test, classifier)
-            CA, DR, fitness, CAList, DRList, FitnessList, FeatureStr = featureSelection.Run()
-            print(CA)
-    except:
-        pass
+    X, y = fsutil.GetLoadDataset(dataName, onehot=False)
+    bestW = OptimizerWByFOA(X, y, test_size, random_state, tree_numbers=15, lifeTime=5, loop=10, areaLimit=30, transferRate=0.05, K=k)
+    gc.collect()
+    X = XGBLFS.LapChange(X, bestW, K=k)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+    print("start")
+    featureSelection = XGBLFS(X_train, X_test, y_train, y_test, classifier)
+    CA, DR, fitness, CAList, DRList, FitnessList, FeatureStr = featureSelection.Run()
+    print(CA)
+
+
+if __name__ == '__main__':
+    random_state = np.random.randint(0x3f3f3f3f)
+    main(random_state, 'SPECTEW', 0.3, '1NN', 1)
+
