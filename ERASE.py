@@ -46,7 +46,7 @@ class SearchStrategies(DatasetUtil):
         return fRelations
 
     def AddRelationFeatures(self, feature, featureRelation, optimalFSet, optimalFitness):
-        fRelations = self.FindRelations(feature, featureRelation)  # 找到和当前feature相关的特征集合
+        fRelations = self.FindRelations(feature, featureRelation)
         for rf in fRelations:
             if rf not in optimalFSet:
                 optimalFSet.add(rf)
@@ -205,7 +205,7 @@ class XGBLFS(xgb.XGBClassifier):
         interactions = GetStatistics(booster, ensemble_trees, MaxTrees=self.n_estimators, MaxInteractionDepth=self.max_depth, SortBy='averageGain')
         avgGainRank = map(int, self.GetFeatureInteractions(interactions, SortBy='averageGain', Desc=True, Depth='Depth0'))
         avgGainRelation = self.GetFeatureInteractions(interactions, SortBy='averageGain', Desc=True, Depth='Depth1')
-        reversFScoreRank = map(int, self.GetFeatureInteractions(interactions, SortBy='FScore', Desc=False, Depth='Depth0'))  # 暂时用FScore, 先不用cover
+        reversFScoreRank = map(int, self.GetFeatureInteractions(interactions, SortBy='FScore', Desc=False, Depth='Depth0'))
         searchStrategy = SearchStrategies(self.base_classifier, self.X_train, self.X_test, self.y_train, self.y_test)
         return searchStrategy.SFSR(avgGainRank, avgGainRelation, reversFScoreRank)
 
@@ -219,7 +219,7 @@ def OptimizerWByFOA(X, y, test_size, random_state, tree_numbers=15, lifeTime=5, 
             n_estimators = 100
             clf = xgb.XGBClassifier(max_depth=max_depth, n_estimators=n_estimators)
             X_train, X_test, y_train, y_test = train_test_split(lap_mul_input, lap_mul_input_y, test_size=test_size, random_state=random_state)
-            y_train_onehot = self.encode.fit_transform(y_train)  # y_train 转 onehot
+            y_train_onehot = self.encode.fit_transform(y_train)
             clf = clf.fit(X_train, y_train)
             y_predict_prob = clf.predict_proba(X_train)
             self.XgbLoss = log_loss(y_train_onehot, y_predict_prob)
@@ -307,13 +307,11 @@ def main(random_state, dataName, test_size, classifier, k):
     gc.collect()
     X = XGBLFS.LapChange(X, bestW, K=k)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-    print("start")
     featureSelection = XGBLFS(X_train, X_test, y_train, y_test, classifier)
     CA, DR, fitness, CAList, DRList, FitnessList, FeatureStr = featureSelection.Run()
-    print(CA)
+    print(f'acc={CA}, dr={DR}, fitness={fitness}')
 
 
 if __name__ == '__main__':
     random_state = np.random.randint(0x3f3f3f3f)
-    main(random_state, 'SPECTEW', 0.3, '1NN', 1)
-
+    main(random_state, 'SPECTEW', 0.3, '1NN', 10)

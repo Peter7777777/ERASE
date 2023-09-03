@@ -245,7 +245,7 @@ class XgbTree:
     def __init__(self, node):
         self.left = None
         self.right = None
-        self.node = node  # or node.copy()
+        self.node = node
 
 
 class XgbModelParser:
@@ -276,7 +276,6 @@ class XgbModelParser:
             m = self.nodeRegex.match(line)
             node.Number = int(m.group(1))
             node.Feature = m.group(2)
-            # split on boolean if m.group(3) is not captured
             node.SplitValue = float(m.group(3)) if m.group(3) else 0.5
             node.LeftChild = int(m.group(4))
             node.RightChild = int(m.group(5))
@@ -325,7 +324,6 @@ def GetStatistics(booster, dump, feature_names=None, MaxTrees=100, MaxInteractio
     FeatureScoreComparer(SortBy)
     xgbParser = XgbModelParser()
     xgbModel = xgbParser.GetXgbModelFromMemory(dump, MaxTrees)
-    # WriteFsTree(xgbModel.XgbTrees[0], 0)  # 将生成的特征树写入到文件中
     featureInteractions = xgbModel.GetFeatureInteractions(MaxInteractionDepth, MaxDeepening)
     interactions_dict = {}
     for i in range(MaxInteractionDepth + 1):

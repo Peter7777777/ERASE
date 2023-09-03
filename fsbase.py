@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""a module of Ls_Forest"""
-
 __author__ = "Alex"
 
 import os
 import sys
-# dirPath = os.path.dirname(os.path.abspath(sys.argv[0]))
-# projectPath = os.path.dirname(dirPath)
-# sys.path.append(projectPath)
-# import warnings
-# warnings.filterwarnings("ignore")
 import argparse
 import uuid
 import multiprocessing
@@ -102,14 +95,6 @@ class FeatureSelection(DatasetUtil):
         MethodDict = {"ENUMFS": self.GetENUMFS}
         return MethodDict.get(self.methodName)
 
-    '''
-    e.g.
-    def GetENUMFS(self, X_train, X_test, y_train, y_test):
-        from FS.SearchStrategy import SearchStrategy
-        from FS.ENUMFS import ENUMFS
-        searchStrategy = SearchStrategy("ENUMFS")
-        return ENUMFS(searchStrategy, X_train, X_test, y_train, y_test, self)
-    '''
     def OutResult(self, result):
         print("Parallel execution {} success on {} dataset using {} to {} test and random seed is {}".format(
             self.methodName, self.dataName, self.classifier, self.test_size, self.random_state))

@@ -64,7 +64,7 @@ mem = __initMemCache()
 def DefaultDataPath(dataName):
     LabDatasPath = f'datasets'
     if dataName in ('citeseer', 'cora', 'pubmed'):
-        defaultDataPath = LabDatasPath + f'Graph_Datasets'
+        defaultDataPath = LabDatasPath + f'/{dataName}'
     else:
         defaultDataPath = LabDatasPath + f'/{dataName}.csv'
     return defaultDataPath
